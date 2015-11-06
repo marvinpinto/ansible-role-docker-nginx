@@ -4,7 +4,7 @@
     - role: 'ansible-role-docker-nginx'
       sudo: true
   tasks:
-    - name: 'Check for a 200 and fail if the word AWESOME is not in the page contents.'
+    - name: 'Check for a 200 and validate the page contents'
       uri:
         url: 'http://localhost'
         return_content: true

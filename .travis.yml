@@ -22,6 +22,12 @@ script:
     | grep -q 'changed=0.*failed=0'
     && (echo 'Idempotence test: pass' && exit 0)
     || (echo 'Idempotence test: fail' && exit 1)
+  - ansible-playbook -v --diff tests/redirect.yml
+  - >
+    ansible-playbook tests/redirect.yml
+    | grep -q 'changed=0.*failed=0'
+    && (echo 'Idempotence test: pass' && exit 0)
+    || (echo 'Idempotence test: fail' && exit 1)
 
 notifications:
   email: false
