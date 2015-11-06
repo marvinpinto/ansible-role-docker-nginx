@@ -1,0 +1,40 @@
+---
+- name: "Create the {{ nginx_base_directory }} directory on the host"
+  sudo: true
+  file:
+    path: "{{ nginx_base_directory }}"
+    state: 'directory'
+    mode: '0755'
+
+- name: 'Put the nginx.conf file in place'
+  sudo: true
+  copy:
+    content: "{{ nginx_conf }}"
+    dest: "{{ nginx_base_directory }}/nginx.conf"
+    mode: '0644'
+  notify: 'restart-docker-nginx'
+
+- name: "Copy the default html contents to {{ nginx_base_directory }}/defaults on the host"
+  sudo: true
+  copy:
+    src: "{{ nginx_static_html_directory }}/"
+    dest: "{{ nginx_base_directory }}/defaults"
+    mode: '0644'
+  notify: 'restart-docker-nginx'
+
+- name: 'Start the nginx docker container'
+  sudo: true
+  docker:
+    image: "nginx:{{ nginx_docker_tag }}"
+    name: "{{ nginx_container_name }}"
+    volumes:
+      - "{{ nginx_base_directory }}/nginx.conf:/etc/nginx/nginx.conf:ro"
+      - "{{ nginx_base_directory }}/defaults:/usr/share/nginx/html:ro"
+    ports: '80:80'
+    state: 'started'
+    restart_policy: 'always'
+    log_driver: 'syslog'
+    log_opt:
+      syslog-tag: "{{ nginx_container_name }}"
+
+- meta: flush_handlers

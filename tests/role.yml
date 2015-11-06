@@ -1,0 +1,14 @@
+---
+- hosts: 'localhost'
+  roles:
+    - role: 'ansible-role-docker-nginx'
+      sudo: true
+  tasks:
+    - name: 'Check for a 200 and validate the page contents'
+      uri:
+        url: 'http://localhost'
+        return_content: true
+      register: webpage
+
+    - fail:
+      when: "'Welcome to nginx' not in webpage.content"
