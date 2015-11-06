@@ -1,0 +1,15 @@
+---
+- name: 'restart-docker-nginx'
+  sudo: true
+  docker:
+    image: "nginx:{{ nginx_docker_tag }}"
+    name: "{{ nginx_container_name }}"
+    volumes:
+      - "{{ nginx_base_directory }}/nginx.conf:/etc/nginx/nginx.conf:ro"
+      - "{{ nginx_base_directory }}/defaults:/usr/share/nginx/html:ro"
+    ports: '80:80'
+    state: 'restarted'
+    restart_policy: 'always'
+    log_driver: 'syslog'
+    log_opt:
+      syslog-tag: "{{ nginx_container_name }}"
