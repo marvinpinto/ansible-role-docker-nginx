@@ -9,8 +9,8 @@ before_install:
  - sudo apt-get install -qq python-apt python-pycurl
 
 install:
-  - sudo pip install http://releases.ansible.com/ansible/ansible-2.0.0-0.4.beta2.tar.gz
-  - sudo pip install docker-py
+  - sudo pip install http://releases.ansible.com/ansible/ansible-2.0.0.2.tar.gz
+  - sudo pip install docker-py==1.2.3
   - echo -e 'localhost  ansible_connection=local' > tests/inventory
   - echo -e '[defaults]\nroles_path = ../\nhostfile = ./tests/inventory' > ansible.cfg
 
