@@ -2,7 +2,7 @@
 - hosts: 'localhost'
   roles:
     - role: 'ansible-role-docker-nginx'
-      nginx_exposed_ports:
+      nginx_published_ports:
         - '80:80'
         - '443:443'
       sudo: true

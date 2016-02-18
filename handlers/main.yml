@@ -5,7 +5,8 @@
     image: "nginx:{{ nginx_docker_tag }}"
     name: "{{ nginx_container_name }}"
     volumes: '{{ nginx_exposed_volumes }}'
-    ports: '{{ nginx_exposed_ports }}'
+    ports: '{{ nginx_published_ports }}'
+    expose: '{{ nginx_exposed_ports }}'
     state: 'stopped'
     restart_policy: 'always'
     log_driver: 'syslog'
@@ -19,7 +20,8 @@
     image: "nginx:{{ nginx_docker_tag }}"
     name: "{{ nginx_container_name }}"
     volumes: '{{ nginx_exposed_volumes }}'
-    ports: '{{ nginx_exposed_ports }}'
+    ports: '{{ nginx_published_ports }}'
+    expose: '{{ nginx_exposed_ports }}'
     state: 'started'
     restart_policy: 'always'
     log_driver: 'syslog'
