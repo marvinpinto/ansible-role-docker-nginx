@@ -5,6 +5,9 @@ nginx_docker_tag: '1.9.6'
 nginx_static_html_directory: 'defaults'
 
 nginx_exposed_ports:
+  - '80'
+
+nginx_published_ports:
   - '80:80'
 
 nginx_exposed_volumes:
