@@ -27,10 +27,8 @@
   docker:
     image: "nginx:{{ nginx_docker_tag }}"
     name: "{{ nginx_container_name }}"
-    volumes:
-      - "{{ nginx_base_directory }}/nginx.conf:/etc/nginx/nginx.conf:ro"
-      - "{{ nginx_base_directory }}/defaults:/usr/share/nginx/html:ro"
-    ports: '80:80'
+    volumes: '{{ nginx_exposed_volumes }}'
+    ports: '{{ nginx_exposed_ports }}'
     state: 'started'
     restart_policy: 'always'
     log_driver: 'syslog'
