@@ -30,7 +30,7 @@
     volumes:
       - "{{ nginx_base_directory }}/nginx.conf:/etc/nginx/nginx.conf:ro"
       - "{{ nginx_base_directory }}/defaults:/usr/share/nginx/html:ro"
-    ports: '80:80'
+    ports: '{{ nginx_exposed_ports }}'
     state: 'started'
     restart_policy: 'always'
     log_driver: 'syslog'
