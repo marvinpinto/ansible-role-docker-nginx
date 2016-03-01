@@ -2,7 +2,7 @@
 - hosts: 'localhost'
   roles:
     - role: 'ansible-role-docker-nginx'
-      sudo: true
+      become: yes
   tasks:
     - name: 'Check for a 200 and validate the page contents'
       uri:

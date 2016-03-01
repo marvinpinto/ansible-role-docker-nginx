@@ -1,13 +1,13 @@
 ---
 - name: "Create the {{ nginx_base_directory }} directory on the host"
-  sudo: true
+  become: yes
   file:
     path: "{{ nginx_base_directory }}"
     state: 'directory'
     mode: '0755'
 
 - name: 'Put the nginx.conf file in place'
-  sudo: true
+  become: yes
   copy:
     content: "{{ nginx_conf }}"
     dest: "{{ nginx_base_directory }}/nginx.conf"
@@ -15,7 +15,7 @@
   notify: 'restart-docker-nginx'
 
 - name: "Copy the default html contents to {{ nginx_base_directory }}/defaults on the host"
-  sudo: true
+  become: yes
   copy:
     src: "{{ nginx_static_html_directory }}/"
     dest: "{{ nginx_base_directory }}/defaults"
@@ -23,7 +23,7 @@
   notify: 'restart-docker-nginx'
 
 - name: 'Start the nginx docker container'
-  sudo: true
+  become: yes
   docker:
     image: "nginx:{{ nginx_docker_tag }}"
     name: "{{ nginx_container_name }}"

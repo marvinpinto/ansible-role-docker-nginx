@@ -25,7 +25,7 @@ Use it in a playbook as follows, assuming you already have docker setup:
 - hosts: 'servers'
   roles:
     - role: 'marvinpinto.docker-nginx'
-      sudo: true
+      become: yes
       nginx_conf: |
         user root;
         worker_processes 1;

@@ -5,7 +5,7 @@
       nginx_published_ports:
         - '80:80'
         - '443:443'
-      sudo: true
+      become: yes
       nginx_conf: |
         user root;
         worker_processes 1;
