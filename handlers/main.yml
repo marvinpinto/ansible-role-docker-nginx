@@ -1,6 +1,6 @@
 ---
 - name: 'restart-docker-nginx'
-  sudo: true
+  become: yes
   docker:
     image: "nginx:{{ nginx_docker_tag }}"
     name: "{{ nginx_container_name }}"
@@ -15,7 +15,7 @@
   notify: 'start-docker-nginx'
 
 - name: 'start-docker-nginx'
-  sudo: true
+  become: yes
   docker:
     image: "nginx:{{ nginx_docker_tag }}"
     name: "{{ nginx_container_name }}"
