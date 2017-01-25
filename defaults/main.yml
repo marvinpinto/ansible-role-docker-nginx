@@ -6,9 +6,11 @@ nginx_static_html_directory: 'defaults'
 
 nginx_exposed_ports:
   - '80'
+  - '443'
 
 nginx_published_ports:
   - '80:80'
+  - '443:443'
 
 nginx_exposed_volumes:
   - "{{ nginx_base_directory }}/nginx.conf:/etc/nginx/nginx.conf:ro"
