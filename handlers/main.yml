@@ -11,7 +11,7 @@
     restart_policy: 'always'
     log_driver: 'syslog'
     log_opt:
-      syslog-tag: "{{ nginx_container_name }}"
+      tag: "{{ nginx_container_name }}"
   notify: 'start-docker-nginx'
 
 - name: 'start-docker-nginx'
@@ -26,4 +26,4 @@
     restart_policy: 'always'
     log_driver: 'syslog'
     log_opt:
-      syslog-tag: "{{ nginx_container_name }}"
+      tag: "{{ nginx_container_name }}"
