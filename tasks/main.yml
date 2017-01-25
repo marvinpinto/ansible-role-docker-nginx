@@ -24,7 +24,7 @@
 
 - name: 'Start the nginx docker container'
   become: yes
-  docker:
+  docker_container:
     image: "nginx:{{ nginx_docker_tag }}"
     name: "{{ nginx_container_name }}"
     volumes: '{{ nginx_exposed_volumes }}'
@@ -33,7 +33,7 @@
     state: 'started'
     restart_policy: 'always'
     log_driver: 'syslog'
-    log_opt:
-      syslog-tag: "{{ nginx_container_name }}"
+    log_options:
+      tag: "{{ nginx_container_name }}"
 
 - meta: flush_handlers
