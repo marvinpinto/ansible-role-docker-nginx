@@ -1,7 +1,7 @@
 ---
 - name: 'restart-docker-nginx'
   become: yes
-  docker:
+  docker_container:
     image: "nginx:{{ nginx_docker_tag }}"
     name: "{{ nginx_container_name }}"
     volumes: '{{ nginx_exposed_volumes }}'
@@ -16,7 +16,7 @@
 
 - name: 'start-docker-nginx'
   become: yes
-  docker:
+  docker_container:
     image: "nginx:{{ nginx_docker_tag }}"
     name: "{{ nginx_container_name }}"
     volumes: '{{ nginx_exposed_volumes }}'
