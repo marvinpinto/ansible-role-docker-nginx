@@ -1,30 +1,30 @@
-docker-nginx
+docker-nginx-alpine
 ============
 
-[![Build Status](https://travis-ci.org/marvinpinto/ansible-role-docker-nginx.svg?branch=master)](https://travis-ci.org/marvinpinto/ansible-role-docker-nginx)
+[![Build Status](https://travis-ci.org/aadl/ansible-role-docker-nginx.svg?branch=master)](https://travis-ci.org/aadl/ansible-role-docker-nginx)
 
-Ansible role to manage and run the nginx docker container.
+Ansible role to manage and run the alpine nginx docker container.
+
+This is based off of [marvinpinto/ansible-role-docker-nginx](https://github.com/marvinpinto/ansible-role-docker-nginx) but updated for newer ansible (>2.1) and uses the alpine nginx image.
 
 Requirements
 ------------
 
-This role has only been tested on Ubuntu 14.04. Since this uses Ansible's
-docker module, you will need to ensure that a recent-ish version of `docker-py`
-and `docker` are installed.
+Since this uses Ansible's docker module, you will need to ensure that a recent-ish version of `docker-py` and `docker` are installed.
 
 Examples
 --------
 
 Install this module from Ansible Galaxy into the './roles' directory:
 ```bash
-ansible-galaxy install marvinpinto.docker-nginx -p ./roles
+ansible-galaxy install aadl.docker-nginx-alpine -p ./roles
 ```
 
 Use it in a playbook as follows, assuming you already have docker setup:
 ```yaml
 - hosts: 'servers'
   roles:
-    - role: 'marvinpinto.docker-nginx'
+    - role: 'aadl.docker-nginx-alpine'
       become: yes
       nginx_conf: |
         user root;
@@ -65,3 +65,4 @@ Author Information
 ------------------
 
 - Marvin Pinto
+- Ryan Eby
