@@ -36,4 +36,4 @@ script:
     || (echo 'Idempotence test: fail' && exit 1)
 
 notifications:
-  email: false
+  webhooks: https://galaxy.ansible.com/api/v1/notifications/
