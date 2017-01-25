@@ -3,16 +3,22 @@ language: python
 python: "2.7"
 sudo: required
 dist: trusty
+services:
+  - docker
 
 before_install:
  - sudo apt-get update -qq
- - sudo apt-get install -qq python-apt python-pycurl
 
 install:
-  - sudo pip install http://releases.ansible.com/ansible/ansible-2.0.0.2.tar.gz
-  - sudo pip install docker-py==1.2.3
+  - sudo pip install docker-py
+  - sudo apt-get install -y sshpass software-properties-common python-software-properties
+  - sudo apt-add-repository -y ppa:ansible/ansible
+  - sudo apt-get update -qq
+  - sudo apt-get install -y ansible
   - echo -e 'localhost  ansible_connection=local' > tests/inventory
   - echo -e '[defaults]\nroles_path = ../\nhostfile = ./tests/inventory' > ansible.cfg
+  - sudo rm /usr/bin/python && sudo ln -s /usr/bin/python2.7 /usr/bin/python
+  - ansible --version
 
 script:
   - ansible-playbook --syntax-check tests/role.yml
@@ -30,6 +36,4 @@ script:
     || (echo 'Idempotence test: fail' && exit 1)
 
 notifications:
-  email: false
-  irc:
-    - secure: "Fyg6/gqseD+6clNxtQqN9jsAPw9siNMZQl5uzu0GGCb14K7817gpnJT8DuWbdlJii4q70f6zt9ApCmtCQ6KN6vTDmwLOYy+IGwUH3DdjY4150K6SSH81JAxoxQY4Oji/jSnTRxXrYNfAZeFA/lUOhhZg11AuRjuOCaBIpa9hWVSX8M3Uu8jIXU6zAeLM+NNINiyue11xJp0Hb22Un2uLWt6VqPEOA45gMfCY1bxPhncROZb+jApdjb6Kv2e5E43VztyVspGu7IHI9Ff4DTJMYO+vy7BfWysgONF18fvVI3IVOI0zo7eUarFKdDlOjq8X1lycNLkfY0oQThn9SPlwEp7KoRKi8l3hq86fW/uK6m9AP7xQP/nJ3nP4W/gHOJcJylGeWdDYOsSVGmdpGEJmg32jyWHkr6dcwUTAANSv/VfGU6zA/vH0GxHF9zY0KLrQnYE3i+Z3Vn1sliEwdVErPlMKP0yKtfR5Wf5cL7vCWX2oRxvORVOu+l5mv/yxWljnIdAnlL2GRV8PlQwHbHNKP4Jy78WC5tCAdYkjckkwGShbZojZFezK/D04HkVAr9VMcMDaB0waiRlB42/VzhaFYQCDUn7PQ4ZSbGvzVFeWrLZNkdhU9MThX2zHiI6rmzYqFzaeemfVP3DB0ZXW/5NHWDzsQpPmGz0G63z3fHNUrtk="
+  webhooks: https://galaxy.ansible.com/api/v1/notifications/

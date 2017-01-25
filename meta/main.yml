@@ -1,13 +1,14 @@
 galaxy_info:
-  author: Marvin Pinto
+  author: Ann Arbor District Library
   description: |
-    Ansible role to manage and run the nginx docker container.
+    Ansible role to manage and run the alpine nginx docker container.
   license: MIT
-  min_ansible_version: 2.0
+  min_ansible_version: 2.1
   platforms:
     - name: Ubuntu
       versions:
        - trusty
+       - xenial
   galaxy_tags:
     - docker
     - ubuntu

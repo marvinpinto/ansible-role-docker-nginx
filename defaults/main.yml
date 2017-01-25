@@ -1,21 +1,23 @@
 ---
 nginx_base_directory: '/tmp/nginx'
 nginx_container_name: 'nginx'
-nginx_docker_tag: '1.9.6'
+nginx_docker_tag: '1.11-alpine'
 nginx_static_html_directory: 'defaults'
 
 nginx_exposed_ports:
   - '80'
+  - '443'
 
 nginx_published_ports:
   - '80:80'
+  - '443:443'
 
 nginx_exposed_volumes:
   - "{{ nginx_base_directory }}/nginx.conf:/etc/nginx/nginx.conf:ro"
   - "{{ nginx_base_directory }}/defaults:/usr/share/nginx/html:ro"
 
 nginx_conf: |
-  user root;
+  user nginx;
   worker_processes 1;
 
   error_log /var/log/nginx/error.log warn;
