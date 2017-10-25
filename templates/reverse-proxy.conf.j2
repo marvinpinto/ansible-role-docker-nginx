@@ -1,0 +1,20 @@
+# {{ ansible_managed }}
+
+upstream {{ item.backend_name }} {
+    {% if item.balancer_config is defined %}
+    {{ item.balancer_config }}
+    {% endif %}
+    {% for backend in item.backends %}
+    server {{ backend }};
+    {% endfor %}
+}
+
+server {
+    listen 80;
+    server_name {{ item.domains|join(' ') }};
+    location / {
+        proxy_set_header   X-Real-IP $remote_addr;
+        proxy_set_header   Host      $http_host;
+        proxy_pass         http://{{ item.backend_name }};
+    }
+}

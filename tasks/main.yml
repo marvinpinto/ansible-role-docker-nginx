@@ -22,6 +22,18 @@
     mode: '0644'
   notify: 'restart-docker-nginx'
 
+- name: create directory for conf.d nginx
+  file:
+    path: "{{ nginx_reverse_proxy_config_directory }}"
+    state: directory
+
+- name: deploy reverse proxy configurations
+  template:
+    src: reverse-proxy.conf.j2
+    dest: "{{ nginx_reverse_proxy_config_directory }}/{{ item.config_name }}.conf"
+  with_items: "{{ nginx_reverse_proxy_proxies }}"
+  notify: 'restart-docker-nginx'
+
 - name: 'Start the nginx docker container'
   become: yes
   docker_container:
