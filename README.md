@@ -82,6 +82,10 @@ nginx_reverse_proxy_proxies:
       - localhost:1881
     domains:
       - app1.192.168.88.10.xip.io
+    locations:
+      - /path/   # In case your site is hosted on backend-name/path/
+    root_redirect_location: /path/  # In case your site is hosted on backend-name/path/ and need to redirect to this site by default
+
   - config_name: app2proxy
     backend_name: my-backend-2
     backends:
@@ -89,7 +93,7 @@ nginx_reverse_proxy_proxies:
       - localhost:1883
     domains:
       - app2.192.168.88.10.xip.io
-    balancer_config: least_conn;
+    balancer_config: least_conn; # Important to add semicolon at the end ; if not the config will break
 
 ```
 
