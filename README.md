@@ -111,3 +111,16 @@ Collaborators
 -------------
 
 * Pablo Estigarribia (pablodav at gmail)
+
+More documentation
+------------------
+
+https://www.nginx.com/resources/wiki/start/topics/tutorials/config_pitfalls/#taxing-rewrites
+
+http://nginx.org/en/docs/http/ngx_http_upstream_module.html
+
+Notes about nginx settings
+--------------------------
+
+When adding backends, if you prefer to add them using DNS ensure server can resolve the DNS name before starting nginx.
+If nginx doesn't resolve the DNS name, it will not start.
