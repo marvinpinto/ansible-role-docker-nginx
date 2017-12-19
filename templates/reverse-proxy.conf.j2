@@ -12,6 +12,7 @@ upstream {{ item.backend_name }} {
 server {
     listen 80;
     server_name {{ item.domains|join(' ') }};
+    proxy_next_upstream error timeout http_404 http_500 http_502 http_503;
 
 {% if item.root_redirect_location is defined %}
     location / {
