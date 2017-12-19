@@ -90,7 +90,7 @@ nginx_reverse_proxy_proxies:
     backend_name: my-backend-2
     backends:
       - localhost:1882
-      - localhost:1883
+      - localhost:1883 backup  # will act as backup, and nginx only passes traffic when primary is unavailable.
     domains:
       - app2.192.168.88.10.xip.io
     balancer_config: least_conn; # Important to add semicolon at the end ; if not the config will break
