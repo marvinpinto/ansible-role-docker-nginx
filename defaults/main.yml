@@ -2,7 +2,7 @@
 nginx_base_directory: '/tmp/nginx'
 nginx_reverse_proxy_config_directory: "{{ nginx_base_directory }}/conf.d"
 nginx_container_name: 'nginx'
-nginx_docker_tag: 'stable'
+nginx_docker_tag: '1.12.2'
 nginx_static_html_directory: 'defaults'
 
 nginx_reverse_proxy_proxies: []

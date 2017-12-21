@@ -49,3 +49,5 @@
       tag: "{{ nginx_container_name }}"
 
 - meta: flush_handlers
+
+- include_tasks: test.yml
