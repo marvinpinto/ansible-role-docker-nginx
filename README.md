@@ -12,6 +12,10 @@ This role has only been tested on Ubuntu 14.04. Since this uses Ansible's
 docker module, you will need to ensure that a recent-ish version of `docker-py`
 and `docker` are installed.
 
+We use [tests/requirements.yml](tests/requirements.yml) to install the dependency role: geerlingguy.docker
+
+You can use also `ansible-galaxin install -r tests/requirements.yml` or better add the same content to your own `requirements.yml` file in your own repository.
+
 Examples
 --------
 
@@ -26,6 +30,7 @@ Use it in a playbook as follows, assuming you already have docker setup:
 ```yaml
 - hosts: 'servers'
   roles:
+    - role: geerlingguy.docker  # You can use any other role to install docker, but docker is a requirement (see obove)
     - role: 'marvinpinto.docker-nginx'
       become: yes
       nginx_conf: |
@@ -124,3 +129,10 @@ Notes about nginx settings
 
 When adding backends, if you prefer to add them using DNS ensure server can resolve the DNS name before starting nginx.
 If nginx doesn't resolve the DNS name, it will not start.
+
+
+Developers
+----------
+
+Help in autotest this role:
+https://github.com/CoffeeITWorks/ansible-generic-help/blob/master/Developers.md
