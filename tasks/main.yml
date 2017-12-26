@@ -1,4 +1,21 @@
 ---
+
+- include: multi_os.yml
+
+- include_tasks: RedHat.yml
+  when: ansible_os_family == 'RedHat' and ansible_distribution != 'Fedora'
+
+- name: Install system requirements for docker-py
+  package:
+    name: "{{ item }}"
+    state: present
+  with_items: "{{ docker_py_deps }}"
+
+- name: install docker-py requirement to manage containers
+  pip:
+    name: docker-py
+    state: present
+
 - name: "Create the {{ nginx_base_directory }} directory on the host"
   become: yes
   file:
