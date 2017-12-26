@@ -1,4 +1,21 @@
 ---
+
+- include: multi_os.yml
+
+- include_tasks: RedHat.yml
+  when: ansible_os_family == 'RedHat' and ansible_distribution != 'Fedora'
+
+- name: Install system requirements for docker-py
+  package:
+    name: "{{ item }}"
+    state: present
+  with_items: "{{ docker_py_deps }}"
+
+- name: install docker-py requirement to manage containers
+  pip:
+    name: docker-py
+    state: present
+
 - name: "Create the {{ nginx_base_directory }} directory on the host"
   become: yes
   file:
@@ -22,18 +39,32 @@
     mode: '0644'
   notify: 'restart-docker-nginx'
 
+- name: create directory for conf.d nginx
+  file:
+    path: "{{ nginx_reverse_proxy_config_directory }}"
+    state: directory
+
+- name: deploy reverse proxy configurations
+  template:
+    src: reverse-proxy.conf.j2
+    dest: "{{ nginx_reverse_proxy_config_directory }}/{{ item.config_name }}.conf"
+  with_items: "{{ nginx_reverse_proxy_proxies }}"
+  notify: 'restart-docker-nginx'
+
 - name: 'Start the nginx docker container'
   become: yes
-  docker:
+  docker_container:
     image: "nginx:{{ nginx_docker_tag }}"
     name: "{{ nginx_container_name }}"
     volumes: '{{ nginx_exposed_volumes }}'
     ports: '{{ nginx_published_ports }}'
-    expose: '{{ nginx_exposed_ports }}'
+    exposed_ports: '{{ nginx_exposed_ports }}'
     state: 'started'
     restart_policy: 'always'
     log_driver: 'syslog'
-    log_opt:
-      syslog-tag: "{{ nginx_container_name }}"
+    log_options:
+      tag: "{{ nginx_container_name }}"
 
 - meta: flush_handlers
+
+- include_tasks: test.yml

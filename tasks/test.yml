@@ -1,0 +1,6 @@
+---
+
+- name: wait for tcp 80 to be up
+  wait_for: 
+    host: localhost
+    port: 80

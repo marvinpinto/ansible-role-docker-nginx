@@ -1,0 +1,47 @@
+# {{ ansible_managed }}
+
+upstream {{ item.backend_name }} {
+    {% if item.balancer_config is defined %}
+    {{ item.balancer_config }}
+    {% endif %}
+    {% for backend in item.backends %}
+    server {{ backend }};
+    {% endfor %}
+}
+
+server {
+    listen 80;
+    server_name {{ item.domains|join(' ') }};
+    proxy_next_upstream error timeout http_404 http_500 http_502 http_503;
+
+{% if item.root_redirect_location is defined %}
+    location / {
+        return 301 http://$host{{ item.root_redirect_location }};
+    }
+{% else %}
+    location / {
+        proxy_set_header   X-Real-IP $remote_addr;
+        proxy_set_header   Host      $http_host;
+        proxy_pass         http://{{ item.backend_name }}$request_uri;
+    }
+{% endif %}
+
+{% if item.locations is defined %}
+{% for location in item.locations %}
+    # refs: https://superuser.com/questions/689885/make-nginx-reverse-proxy-302-redirect-to-a-uri-sub-folder-instead-of-root
+    location ^~ {{ location }} {
+      proxy_pass         http://{{ item.backend_name }}{{ location }};
+      proxy_redirect    default;
+
+      proxy_set_header          Host               $host;
+      proxy_set_header          X-Real-IP          $remote_addr;
+      proxy_set_header          X-Forwarded-For    $proxy_add_x_forwarded_for;
+      proxy_set_header          X-Forwarded-Proto  http;
+      proxy_buffer_size         128k;
+      proxy_buffers             8 128k;
+      proxy_busy_buffers_size   256k;
+    }
+{% endfor %}
+{% endif %}
+
+}
