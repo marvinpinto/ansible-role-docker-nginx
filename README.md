@@ -72,6 +72,25 @@ Expected to Be Configured
   * `nginx_reverse_proxy_backends`: list of backend servers, including ports and [other valid parameters for `server` in the `upstream` context of an nginx config file](http://nginx.org/en/docs/http/ngx_http_upstream_module.html#server)
   * `nginx_reverse_proxy_config_name`: name to use for the proxy file (do not include the '.conf' extension, role will add this)
 
+Custom config files
+-------------------
+
+You are able to use the variable `nginx_custom_conf` to setup custom config files in `/etc/nginx/conf.d/configfile.conf`
+
+Example:
+
+```yaml
+nginx_custom_conf:
+  - config_name: some_config  # Do not add the .conf, it will be added by the role
+    # Example lines to add a return to some other url
+    lines:
+      - "server {"
+      - "    listen 80;"
+      - "    server_name host.domain.net;"
+      - "    return 301 http://someother:port/path.html;"
+      - "}"
+```
+
 Example Playbook
 ----------------
 

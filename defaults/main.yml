@@ -7,6 +7,8 @@ nginx_static_html_directory: 'defaults'
 
 nginx_reverse_proxy_proxies: []
 
+nginx_custom_conf: []
+
 nginx_exposed_ports:
   - '80'
 
