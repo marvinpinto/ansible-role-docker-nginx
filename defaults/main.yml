@@ -6,6 +6,7 @@ nginx_docker_tag: '1.12.2'
 nginx_static_html_directory: 'defaults'
 
 nginx_reverse_proxy_proxies: []
+nginx_reverse_proxy_proxies_ssl: []
 
 nginx_custom_conf: []
 
