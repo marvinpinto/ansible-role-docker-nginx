@@ -17,6 +17,17 @@ server {
     server_name {{ item.domains|join(' ') }};
     return 301 https://$host$request_uri;
 
+
+
+}
+
+server {
+    listen 443 ssl;
+    server_name {{ item.domains|join(' ') }};
+    ssl_certificate /etc/ssl/nginxuy_group_upm_com.crt;
+    ssl_certificate_key /etc/ssl/nginxuy_group_upm_com.key;
+    proxy_next_upstream error timeout http_404 http_500 http_502 http_503;
+
 {% if item.root_redirect_location is defined %}
     location / {
         return 301 https://$host{{ item.root_redirect_location }};
@@ -48,14 +59,3 @@ server {
 {% endif %}
 
 }
-
-{# server {
-    listen 443 ssl;
-    server_name {{ item.domains|join(' ') }};
-    #ssl_certificate /etc/ssl/nginxuy_group_upm_com.crt;
-    #ssl_certificate_key /etc/ssl/nginxuy_group_upm_com.key;
-    proxy_next_upstream error timeout http_404 http_500 http_502 http_503;
-
-
-
-} #}
