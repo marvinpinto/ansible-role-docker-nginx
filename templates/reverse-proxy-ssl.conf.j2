@@ -49,7 +49,7 @@ server {
 
 }
 
-server {
+{# server {
     listen 443 ssl;
     server_name {{ item.domains|join(' ') }};
     #ssl_certificate /etc/ssl/nginxuy_group_upm_com.crt;
@@ -58,4 +58,4 @@ server {
 
 
 
-}
+} #}
