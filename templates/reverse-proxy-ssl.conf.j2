@@ -9,8 +9,8 @@ upstream {{ item.backend_name }} {
     {% endfor %}
 }
 
-access_log /var/log/nginx/nginx.vhost.access.log debug;
-error_log /var/log/nginx/nginx.vhost.error.log debug;
+access_log /var/log/nginx/nginx.vhost.access.log;
+error_log /var/log/nginx/nginx.vhost.error.log;
 
 server {
     listen 80;
@@ -46,7 +46,7 @@ server {
     }
 {% endfor %}
 {% endif %}
-    
+
 }
 
 server {
