@@ -24,8 +24,8 @@ server {
 server {
     listen 443 ssl;
     server_name {{ item.domains|join(' ') }};
-    ssl_certificate /etc/ssl/nginxuy_group_upm_com.crt;
-    ssl_certificate_key /etc/ssl/nginxuy_group_upm_com.key;
+    ssl_certificate {{ nginx_reverse_proxy_ssl_crt }};
+    ssl_certificate_key {{ nginx_reverse_proxy_ssl_key }};
     proxy_next_upstream error timeout http_404 http_500 http_502 http_503;
 
 {% if item.root_redirect_location is defined %}

@@ -6,7 +6,11 @@ nginx_docker_tag: '1.12.2'
 nginx_static_html_directory: 'defaults'
 
 nginx_reverse_proxy_proxies: []
+
+# Remmember also to modify nginx_exposed_volumes to allow access to the files
 nginx_reverse_proxy_proxies_ssl: []
+nginx_reverse_proxy_ssl_crt:  '/etc/ssl/exampledomain_com.crt'
+nginx_reverse_proxy_ssl_key:  '/etc/ssl/exampledomain_com.key'
 
 nginx_custom_conf: []
 
