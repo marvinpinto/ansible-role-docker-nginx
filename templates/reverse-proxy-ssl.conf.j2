@@ -64,7 +64,7 @@ server {
 {% else %}
     location / {
         proxy_set_header   X-Real-IP $remote_addr;
-        proxy_set_header   Host      $https_host;
+        proxy_set_header   Host      $http_host;
         proxy_pass         https://{{ item.backend_name }}$request_uri;
     }
 {% endif %}
