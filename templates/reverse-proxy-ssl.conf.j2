@@ -15,9 +15,38 @@ error_log /var/log/nginx/nginx.vhost.error.log;
 server {
     listen 80;
     server_name {{ item.domains|join(' ') }};
-    return 301 https://$host$request_uri;
+    
+{% if item.root_redirect_location is defined %}
+    location / {
+        return 301 https://$host{{ item.root_redirect_location }};
+    }
+{% else %}
+    location / {
+        proxy_set_header   X-Real-IP $remote_addr;
+        proxy_set_header   Host      $https_host;
+        proxy_pass         https://{{ item.backend_name }}$request_uri;
+    }
+{% endif %}
 
+{% if item.locations is defined %}
+{% for location in item.locations %}
+    # refs: https://superuser.com/questions/689885/make-nginx-reverse-proxy-302-redirect-to-a-uri-sub-folder-instead-of-root
+    location ^~ {{ location }} {
+      proxy_pass         https://{{ item.backend_name }}{{ location }};
+      proxy_redirect    default;
 
+      proxy_set_header          Host               $host;
+      proxy_set_header          X-Real-IP          $remote_addr;
+      proxy_set_header          X-Forwarded-For    $proxy_add_x_forwarded_for;
+      proxy_set_header          X-Forwarded-Proto  https;
+      proxy_buffer_size         128k;
+      proxy_buffers             8 128k;
+      proxy_busy_buffers_size   256k;
+    }
+{% endfor %}
+{% endif %}
+
+return 301 https://$host$request_uri;
 
 }
 
