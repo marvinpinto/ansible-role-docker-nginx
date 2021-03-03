@@ -18,10 +18,12 @@ server {
     
 {% if item.root_redirect_location is defined %}
     location / {
+        include       /etc/nginx/mime.types;
         return 301 http://$host{{ item.root_redirect_location }};
     }
 {% else %}
     location / {
+        include       /etc/nginx/mime.types;
         proxy_set_header   X-Real-IP $remote_addr;
         proxy_set_header   Host      $http_host;
         proxy_pass         http://{{ item.backend_name }}$request_uri;
