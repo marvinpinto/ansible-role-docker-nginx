@@ -74,6 +74,7 @@ server {
     location / {
         proxy_set_header   X-Real-IP $remote_addr;
         proxy_set_header   Host      $http_host;
+        proxy_set_header   X-Forwarded-Host   $host;
         proxy_pass         http://{{ item.backend_name }}$request_uri;
         include       /etc/nginx/mime.types;
     }
