@@ -20,6 +20,7 @@ server {
     location / {
         include       /etc/nginx/mime.types;
         return 301 http://$host{{ item.root_redirect_location }};
+        proxy_pass         http://{{ item.backend_name }}$request_uri;
     }
 {% else %}
     location / {
@@ -69,6 +70,7 @@ server {
     location / {
         include       /etc/nginx/mime.types;
         return 301 https://$host{{ item.root_redirect_location }};
+        proxy_pass         http://{{ item.backend_name }}$request_uri;
     }
 {% else %}
     location / {
