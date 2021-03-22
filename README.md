@@ -121,6 +121,65 @@ nginx_reverse_proxy_proxies:
 
 ```
 
+Example adding ssl reverse proxy support
+----------------------------------------
+
+First add a task in your playbook to extract the ssl files
+
+```yaml
+- name: Apply tasks for docker nginx servers
+  hosts: docker_nginx_servers
+  become: yes
+  environment: "{{ proxy_env }}"
+  tasks:
+    - name: Install Unzip required for unarchive
+      package:
+        name: ["unzip","tar"]
+        state: present
+    - name: install docker ansible dependencies
+      pip:
+        name: docker-py
+        state: present
+    - name: Download SSL Certificate bundle
+      environment: 
+        http_proxy: ''
+        https_proxy: ''
+      # Example getting the file from gitlab api
+      # you can also use unarchive or get_url module
+      shell: "wget --header='PRIVATE-TOKEN: {{ VAULT_DOCKER_NGINX_SERVERS_VAULT_FILES_TOKEN }}' 'http://exampledomain.com/api/v4/projects/50/repository/files/ssl-certificate.tar.gz/raw?ref=master' -O /tmp/ssl-certificate.tar.gz"
+      changed_when: False
+      no_log: True
+    - name: Unarchive SSL Certificate to ssl folder
+      unarchive:
+        src: /tmp/ssl-certificate.tar.gz
+        dest: /etc/ssl
+        remote_src: yes        
+```
+
+```yaml
+# Remmember also to modify nginx_exposed_volumes to allow access to the files
+nginx_reverse_proxy_proxies_ssl:
+  - config_name: app2proxy
+    backend_name: my-backend-2
+    backends:
+      - localhost:1882
+      - localhost:1883 backup  # will act as backup, and nginx only passes traffic when primary is unavailable.
+    domains:
+      - app2.192.168.88.10.xip.io
+    balancer_config: least_conn; # Important to add semicolon at the end ; if not the config will break
+
+nginx_reverse_proxy_ssl_crt:  '/etc/ssl/exampledomain_com.crt'
+nginx_reverse_proxy_ssl_key:  '/etc/ssl/exampledomain_com.key'
+
+nginx_exposed_volumes:
+  - "{{ nginx_base_directory }}/nginx.conf:/etc/nginx/nginx.conf:ro"
+  - "{{ nginx_base_directory }}/defaults:/usr/share/nginx/html:ro"
+  - "{{ nginx_reverse_proxy_config_directory }}:/etc/nginx/conf.d:ro"
+  - "/etc/ssl/exampledomain_com.crt:/etc/ssl/exampledomain_com.crt:ro"
+  - "/etc/ssl/exampledomain_com.key:/etc/ssl/exampledomain_com.key:ro"
+
+```
+
 License
 -------
 
