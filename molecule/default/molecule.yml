@@ -10,12 +10,23 @@ driver:
 
 platforms:
 
+  - name: ansible_nginx_docker_test-01
+    image: "geerlingguy/docker-ubuntu1804-ansible:latest"
+    #privileged: True
+    command: /sbin/init
+    pre_build_image: true
+    capabilities:
+      - SYS_ADMIN
+    tmpfs:
+      - /run
+      - /tmp
+    volumes:
+      - "/sys/fs/cgroup:/sys/fs/cgroup:ro"
+
   - name: ansible_nginx_docker_test-04
     image: "geerlingguy/docker-centos8-ansible"
     #privileged: True
     command: /sbin/init
-    security_opts:
-      - seccomp=/usr/share/containers/seccomp.json
     pre_build_image: true
     capabilities:
       - SYS_ADMIN
