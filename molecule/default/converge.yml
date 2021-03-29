@@ -1,0 +1,9 @@
+---
+- name: Converge
+  hosts: all
+  vars:
+    burp_module_test_client: False
+    burpui_standalone: True
+  roles:
+    - role: geerlingguy.docker
+    - role: ansible-role-docker-nginx

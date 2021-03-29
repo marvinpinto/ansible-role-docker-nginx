@@ -9,13 +9,37 @@ driver:
   name: docker
 
 platforms:
+  - name: ansible_nginx_docker_test-01
+    image: "geerlingguy/docker-ubuntu1804-ansible:latest"
+    #privileged: True
+    command: /sbin/init
+    pre_build_image: true
+    capabilities:
+      - SYS_ADMIN
+    tmpfs:
+      - /run
+      - /tmp
+    volumes:
+      - "/sys/fs/cgroup:/sys/fs/cgroup:ro"
+    groups:
+      - group1
+
+  - name: ansible_nginx_docker_test-03
+    image: docker.io/pycontribs/centos:7
+    pre_build_image: true
+    command: /sbin/init
+    capabilities:
+      - SYS_ADMIN
+    volumes:
+      - "/sys/fs/cgroup:/sys/fs/cgroup:ro"
+    #privileged: True
+    groups:
+      - group1
 
   - name: ansible_nginx_docker_test-04
     image: "geerlingguy/docker-centos8-ansible"
     #privileged: True
     command: /sbin/init
-    security_opts:
-      - seccomp=/usr/share/containers/seccomp.json
     pre_build_image: true
     capabilities:
       - SYS_ADMIN
@@ -33,8 +57,3 @@ provisioner:
     ssh_connection:
       pipelining: true
       ssh_args: -o ControlMaster=auto -o ControlPersist=60s
-  #inventory:
-  #    host_vars:
-        # setting for the platform instance named 'ansible_nginx_docker_test-04'
-        #ansible_nginx_docker_test-04:
-        #  ansible_user: ansible
