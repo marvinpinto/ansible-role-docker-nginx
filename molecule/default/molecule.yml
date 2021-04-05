@@ -10,22 +10,23 @@ driver:
 
 platforms:
 
-  - name: ansible_nginx_docker_test-01
-    image: "geerlingguy/docker-ubuntu1804-ansible:latest"
-    #privileged: True
-    command: /sbin/init
-    pre_build_image: true
-    capabilities:
-      - SYS_ADMIN
-    tmpfs:
-      - /run
-      - /tmp
-    volumes:
-      - "/sys/fs/cgroup:/sys/fs/cgroup:ro"
+  # Not possible to test on ubuntu under docker due to aufs only support
+  #- name: ansible_nginx_docker_test-01
+  #  image: "geerlingguy/docker-ubuntu2004-ansible:latest"
+  #  privileged: True
+  #  command: /sbin/init
+  #  pre_build_image: true
+  #  capabilities:
+  #    - SYS_ADMIN
+  #  tmpfs:
+  #    - /run
+  #    - /tmp
+  #  volumes:
+  #    - "/sys/fs/cgroup:/sys/fs/cgroup:ro"
 
   - name: ansible_nginx_docker_test-04
     image: "geerlingguy/docker-centos8-ansible"
-    #privileged: True
+    privileged: True
     command: /sbin/init
     pre_build_image: true
     capabilities:

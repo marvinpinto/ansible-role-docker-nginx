@@ -6,11 +6,13 @@ Requirements
 ============
 
 * Docker Engine
-* docker-py
+* ansible
+* molecule[docker]
 
 Install
 =======
 
 .. code-block:: bash
 
-  $ sudo pip install docker-py
+  $ pip install --user ansible
+  $ pip install --user molecule[docker]

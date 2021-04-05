@@ -29,6 +29,12 @@ Use it in a playbook as follows, assuming you already have docker setup:
 
 ```yaml
 - hosts: 'servers'
+
+  pre_tasks:
+    - name: Update apt cache.
+      apt: update_cache=yes cache_valid_time=600
+      when: ansible_os_family == 'Debian'
+
   roles:
     - role: geerlingguy.docker  # You can use any other role to install docker, but docker is a requirement (see obove)
     - role: 'marvinpinto.docker-nginx'
