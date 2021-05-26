@@ -27,6 +27,11 @@ nginx_exposed_volumes:
   - "{{ nginx_base_directory }}/defaults:/usr/share/nginx/html:ro"
   - "{{ nginx_reverse_proxy_config_directory }}:/etc/nginx/conf.d:ro"
 
+nginx_reverse_proxy_connect_timeout: '60'
+nginx_reverse_proxy_send_timeout: '180'
+nginx_reverse_proxy_read_timeout: '300'
+nginx_reverse_send_timeout: '180'
+
 nginx_conf: |
   user root;
   worker_processes 1;
@@ -49,3 +54,4 @@ nginx_conf: |
       keepalive_timeout  65;
       include /etc/nginx/conf.d/*.conf;
   }
+
