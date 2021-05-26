@@ -46,10 +46,10 @@ server {
         proxy_set_header   X-Forwarded-For    $proxy_add_x_forwarded_for;
         proxy_pass         http://{{ item.backend_name }}$request_uri;
         
-        nginx_reverse_proxy_connect_timeout    {{ proxy_connect_timeout }};  
-        nginx_reverse_proxy_send_timeout      {{ proxy_send_timeout }};
-        nginx_reverse_proxy_read_timeout      {{ proxy_read_timeout }};
-        nginx_reverse_send_timeout            {{ send_timeout }};
+        proxy_connect_timeout    {{ nginx_reverse_proxy_connect_timeout }};  
+        proxy_send_timeout      {{ nginx_reverse_proxy_send_timeout }};
+        proxy_read_timeout      {{ nginx_reverse_proxy_read_timeout }};
+        send_timeout            {{ nginx_reverse_send_timeout }};
 
 
         include       /etc/nginx/mime.types;
@@ -72,10 +72,10 @@ server {
       proxy_buffers             8 128k;
       proxy_busy_buffers_size   256k;
       
-      nginx_reverse_proxy_connect_timeout    {{ proxy_connect_timeout }};  
-      nginx_reverse_proxy_send_timeout      {{ proxy_send_timeout }};
-      nginx_reverse_proxy_read_timeout      {{ proxy_read_timeout }};
-      nginx_reverse_send_timeout            {{ send_timeout }};
+      proxy_connect_timeout    {{ nginx_reverse_proxy_connect_timeout }};  
+      proxy_send_timeout      {{ nginx_reverse_proxy_send_timeout }};
+      proxy_read_timeout      {{ nginx_reverse_proxy_read_timeout }};
+      send_timeout            {{ nginx_reverse_send_timeout }};
       
     }
 {% endfor %}
