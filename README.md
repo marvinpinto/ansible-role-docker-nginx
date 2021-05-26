@@ -29,6 +29,12 @@ Use it in a playbook as follows, assuming you already have docker setup:
 
 ```yaml
 - hosts: 'servers'
+
+  pre_tasks:
+    - name: Update apt cache.
+      apt: update_cache=yes cache_valid_time=600
+      when: ansible_os_family == 'Debian'
+
   roles:
     - role: geerlingguy.docker  # You can use any other role to install docker, but docker is a requirement (see obove)
     - role: 'marvinpinto.docker-nginx'
@@ -72,6 +78,25 @@ Expected to Be Configured
   * `nginx_reverse_proxy_backends`: list of backend servers, including ports and [other valid parameters for `server` in the `upstream` context of an nginx config file](http://nginx.org/en/docs/http/ngx_http_upstream_module.html#server)
   * `nginx_reverse_proxy_config_name`: name to use for the proxy file (do not include the '.conf' extension, role will add this)
 
+Custom config files
+-------------------
+
+You are able to use the variable `nginx_custom_conf` to setup custom config files in `/etc/nginx/conf.d/configfile.conf`
+
+Example:
+
+```yaml
+nginx_custom_conf:
+  - config_name: some_config  # Do not add the .conf, it will be added by the role
+    # Example lines to add a return to some other url
+    lines:
+      - "server {"
+      - "    listen 80;"
+      - "    server_name host.domain.net;"
+      - "    return 301 http://someother:port/path.html;"
+      - "}"
+```
+
 Example Playbook
 ----------------
 
@@ -99,6 +124,65 @@ nginx_reverse_proxy_proxies:
     domains:
       - app2.192.168.88.10.xip.io
     balancer_config: least_conn; # Important to add semicolon at the end ; if not the config will break
+
+```
+
+Example adding ssl reverse proxy support
+----------------------------------------
+
+First add a task in your playbook to extract the ssl files
+
+```yaml
+- name: Apply tasks for docker nginx servers
+  hosts: docker_nginx_servers
+  become: yes
+  environment: "{{ proxy_env }}"
+  tasks:
+    - name: Install Unzip required for unarchive
+      package:
+        name: ["unzip","tar"]
+        state: present
+    - name: install docker ansible dependencies
+      pip:
+        name: docker-py
+        state: present
+    - name: Download SSL Certificate bundle
+      environment: 
+        http_proxy: ''
+        https_proxy: ''
+      # Example getting the file from gitlab api
+      # you can also use unarchive or get_url module
+      shell: "wget --header='PRIVATE-TOKEN: {{ VAULT_DOCKER_NGINX_SERVERS_VAULT_FILES_TOKEN }}' 'http://exampledomain.com/api/v4/projects/50/repository/files/ssl-certificate.tar.gz/raw?ref=master' -O /tmp/ssl-certificate.tar.gz"
+      changed_when: False
+      no_log: True
+    - name: Unarchive SSL Certificate to ssl folder
+      unarchive:
+        src: /tmp/ssl-certificate.tar.gz
+        dest: /etc/ssl
+        remote_src: yes        
+```
+
+```yaml
+# Remmember also to modify nginx_exposed_volumes to allow access to the files
+nginx_reverse_proxy_proxies_ssl:
+  - config_name: app2proxy
+    backend_name: my-backend-2
+    backends:
+      - localhost:1882
+      - localhost:1883 backup  # will act as backup, and nginx only passes traffic when primary is unavailable.
+    domains:
+      - app2.192.168.88.10.xip.io
+    balancer_config: least_conn; # Important to add semicolon at the end ; if not the config will break
+
+nginx_reverse_proxy_ssl_crt:  '/etc/ssl/exampledomain_com.crt'
+nginx_reverse_proxy_ssl_key:  '/etc/ssl/exampledomain_com.key'
+
+nginx_exposed_volumes:
+  - "{{ nginx_base_directory }}/nginx.conf:/etc/nginx/nginx.conf:ro"
+  - "{{ nginx_base_directory }}/defaults:/usr/share/nginx/html:ro"
+  - "{{ nginx_reverse_proxy_config_directory }}:/etc/nginx/conf.d:ro"
+  - "/etc/ssl/exampledomain_com.crt:/etc/ssl/exampledomain_com.crt:ro"
+  - "/etc/ssl/exampledomain_com.key:/etc/ssl/exampledomain_com.key:ro"
 
 ```
 
