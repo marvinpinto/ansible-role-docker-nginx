@@ -1,47 +1,52 @@
 ---
 dependency:
   name: galaxy
-driver:
-  name: docker
-lint:
-  name: yamllint
-platforms:
-  - name: ansible_test-01
-    image: solita/ubuntu-systemd:16.04
-    privileged: True
-    command: /sbin/init
-    capabilities:
-      - SYS_ADMIN    
-    volumes:
-      - "/sys/fs/cgroup:/sys/fs/cgroup:ro"
-      - "/var/run/docker.sock:/var/run/docker.sock"
-    groups:
-      - group1
-  # In docker cannot be tested with centos 7 due to https://github.com/ansible/ansible-modules-core/issues/593
-  - name: ansible_test-03
-    image: centos/systemd
-    command: /sbin/init
-    capabilities:
-      - SYS_ADMIN
-    volumes:
-      - "/sys/fs/cgroup:/sys/fs/cgroup:ro"
-      - "/var/run/docker.sock:/var/run/docker.sock"
-    privileged: True
-    groups:
-      - group1
-provisioner:
-  name: ansible
-  lint:
-    name: ansible-lint
-scenario:
-  name: default
-verifier:
-  name: testinfra
-  lint:
-    name: flake8
-dependency:
-  name: galaxy
   options:
     ignore-certs: True
     ignore-errors: True
-    role-file: tests/requirements.yml
+    role-file: tests/requirements.yml  # this file is at the root of the git project same place as molecule is executed
+driver:
+  name: docker
+
+platforms:
+
+  # Not possible to test on ubuntu under docker due to aufs only support
+  #- name: ansible_nginx_docker_test-01
+  #  image: "geerlingguy/docker-ubuntu2004-ansible:latest"
+  #  privileged: True
+  #  command: /sbin/init
+  #  pre_build_image: true
+  #  capabilities:
+  #    - SYS_ADMIN
+  #  tmpfs:
+  #    - /run
+  #    - /tmp
+  #  volumes:
+  #    - "/sys/fs/cgroup:/sys/fs/cgroup:ro"
+
+  - name: ansible_nginx_docker_test-04
+    image: "geerlingguy/docker-centos8-ansible"
+    privileged: True
+    command: /sbin/init
+    pre_build_image: true
+    capabilities:
+      - SYS_ADMIN
+    tmpfs:
+      - /run
+      - /tmp
+    volumes:
+      - "/sys/fs/cgroup:/sys/fs/cgroup:ro"
+
+provisioner:
+  name: ansible
+  config_options:
+    defaults:
+      callback_whitelist: profile_tasks
+    ssh_connection:
+      pipelining: true
+      ssh_args: -o ControlMaster=auto -o ControlPersist=60s
+  #inventory:
+  #    host_vars:
+        # setting for the platform instance named 'ansible_nginx_docker_test-04'
+        #ansible_nginx_docker_test-04:
+        #  ansible_user: ansible

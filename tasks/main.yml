@@ -1,6 +1,6 @@
 ---
 
-- include: multi_os.yml
+- import_tasks: multi_os.yml
 
 - include_tasks: RedHat.yml
   when: ansible_os_family == 'RedHat' and ansible_distribution != 'Fedora'
@@ -49,6 +49,35 @@
     src: reverse-proxy.conf.j2
     dest: "{{ nginx_reverse_proxy_config_directory }}/{{ item.config_name }}.conf"
   with_items: "{{ nginx_reverse_proxy_proxies }}"
+  notify: 'restart-docker-nginx'
+
+- name: deploy reverse proxy configurations ssl
+  template:
+    src: reverse-proxy-ssl.conf.j2
+    dest: "{{ nginx_reverse_proxy_config_directory }}/{{ item.config_name }}.conf"
+  with_items: "{{ nginx_reverse_proxy_proxies_ssl }}"
+  notify: 'restart-docker-nginx'
+
+- name: deploy reverse proxy cloud configurations ssl
+  template:
+    src: reverse-proxy-ssl-cloud.conf.j2
+    dest: "{{ nginx_reverse_proxy_config_directory }}/{{ item.config_name }}.conf"
+  with_items: "{{ nginx_reverse_proxy_proxies_cloud_ssl }}"
+  notify: 'restart-docker-nginx'
+
+- name: deploy reverse proxy onprem configurations ssl
+  template:
+    src: reverse-proxy-ssl-onprem.conf.j2
+    dest: "{{ nginx_reverse_proxy_config_directory }}/{{ item.config_name }}.conf"
+  with_items: "{{ nginx_reverse_proxy_proxies_onprem_ssl }}"
+  notify: 'restart-docker-nginx'
+
+
+- name: deploy custom conf files
+  template:
+    src: custom-config.conf.j2
+    dest: "{{ nginx_reverse_proxy_config_directory }}/{{ item.config_name }}.conf"
+  with_items: "{{ nginx_custom_conf }}"
   notify: 'restart-docker-nginx'
 
 - name: 'Start the nginx docker container'

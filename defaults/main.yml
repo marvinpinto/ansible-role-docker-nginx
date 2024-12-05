@@ -7,16 +7,30 @@ nginx_static_html_directory: 'defaults'
 
 nginx_reverse_proxy_proxies: []
 
+# Remmember also to modify nginx_exposed_volumes to allow access to the files
+nginx_reverse_proxy_proxies_ssl: []
+nginx_reverse_proxy_ssl_crt:  '/etc/ssl/exampledomain_com.crt'
+nginx_reverse_proxy_ssl_key:  '/etc/ssl/exampledomain_com.key'
+
+nginx_custom_conf: []
+
 nginx_exposed_ports:
   - '80'
+  - '443'
 
 nginx_published_ports:
   - '80:80'
+  - '443:443'
 
 nginx_exposed_volumes:
   - "{{ nginx_base_directory }}/nginx.conf:/etc/nginx/nginx.conf:ro"
   - "{{ nginx_base_directory }}/defaults:/usr/share/nginx/html:ro"
   - "{{ nginx_reverse_proxy_config_directory }}:/etc/nginx/conf.d:ro"
+
+nginx_reverse_proxy_connect_timeout: '60'
+nginx_reverse_proxy_send_timeout: '180'
+nginx_reverse_proxy_read_timeout: '300'
+nginx_reverse_send_timeout: '180'
 
 nginx_conf: |
   user root;
@@ -40,3 +54,4 @@ nginx_conf: |
       keepalive_timeout  65;
       include /etc/nginx/conf.d/*.conf;
   }
+

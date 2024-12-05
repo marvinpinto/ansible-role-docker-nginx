@@ -1,0 +1,89 @@
+# {{ ansible_managed }}
+
+upstream {{ item.backend_name }} {
+    {% if item.balancer_config is defined %}
+    {{ item.balancer_config }}
+    {% endif %}
+    {% for backend in item.backends %}
+    server {{ backend }};
+    {% endfor %}
+}
+
+access_log /var/log/nginx/nginx.vhost.access.log;
+error_log /var/log/nginx/nginx.vhost.error.log;
+
+server {
+    listen 80;
+    server_name {{ item.domains|join(' ') }};
+    return 301 https://$host$request_uri;
+
+}
+
+server {
+    listen 443 ssl;
+    server_name {{ item.domains|join(' ') }};
+    ssl_certificate {{ nginx_reverse_proxy_cloud_ssl_crt }};
+    ssl_certificate_key {{ nginx_reverse_proxy_cloud_ssl_key }};
+    ssl_protocols  TLSv1 TLSv1.1 TLSv1.2;
+    ssl_ciphers HIGH:!aNULL:!eNULL:!EXPORT:!CAMELLIA:!DES:!MD5:!PSK:!RC4;
+    ssl_prefer_server_ciphers on;
+    proxy_next_upstream error timeout http_404 http_500 http_502 http_503;
+
+    access_log /var/log/nginx/nginx.vhost.access.log;
+    error_log /var/log/nginx/nginx.vhost.error.log;
+
+{% if item.root_redirect_location is defined %}
+    location / {
+        include       /etc/nginx/mime.types;
+        return 301 https://$host{{ item.root_redirect_location }};
+    }
+{% else %}
+    location / {
+        proxy_set_header   X-Real-IP $remote_addr;
+        proxy_set_header   Host      $http_host;
+        proxy_set_header   X-Forwarded-Host   $http_host;
+        proxy_set_header   X-Forwarded-Proto  $scheme;
+        proxy_set_header   X-Forwarded-For    $proxy_add_x_forwarded_for;
+    {% if item.skip_ssl_verify | default(false) %}
+    proxy_pass         https://{{ item.backend_name }}$request_uri;
+        proxy_ssl_verify off;
+    {% else %}
+    proxy_pass         http://{{ item.backend_name }}$request_uri;
+    {% endif %}
+        
+        proxy_connect_timeout    {{ nginx_reverse_proxy_connect_timeout }};  
+        proxy_send_timeout      {{ nginx_reverse_proxy_send_timeout }};
+        proxy_read_timeout      {{ nginx_reverse_proxy_read_timeout }};
+        send_timeout            {{ nginx_reverse_send_timeout }};
+
+
+        include       /etc/nginx/mime.types;
+    }
+{% endif %}
+
+{% if item.locations is defined %}
+{% for location in item.locations %}
+    # refs: https://superuser.com/questions/689885/make-nginx-reverse-proxy-302-redirect-to-a-uri-sub-folder-instead-of-root
+    location ^~ {{ location }} {
+      proxy_pass         http://{{ item.backend_name }}{{ location }};
+      proxy_redirect    default;
+
+      proxy_set_header          Host               $http_host;
+      proxy_set_header          X-Real-IP          $remote_addr;
+      proxy_set_header          X-Forwarded-Host   $http_host;
+      proxy_set_header          X-Forwarded-For    $proxy_add_x_forwarded_for;
+      proxy_set_header          X-Forwarded-Proto  $scheme;
+      proxy_buffer_size         128k;
+      proxy_buffers             8 128k;
+      proxy_busy_buffers_size   256k;
+      
+      proxy_connect_timeout    {{ nginx_reverse_proxy_connect_timeout }};  
+      proxy_send_timeout      {{ nginx_reverse_proxy_send_timeout }};
+      proxy_read_timeout      {{ nginx_reverse_proxy_read_timeout }};
+      send_timeout            {{ nginx_reverse_send_timeout }};
+      
+    }
+{% endfor %}
+{% endif %}
+
+}
